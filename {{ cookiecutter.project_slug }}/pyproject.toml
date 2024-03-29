@@ -1,0 +1,53 @@
+[project]
+name = "api-frontend"
+description = "Interaction between backend APIs and frontent"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+show_error_codes = true
+disable_error_code = ["import","attr-defined","assignment"]
+
+[tool.ruff]
+# Never enforce `E501` (line length violations).
+lint.select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "D",  # for docstring check
+]
+lint.ignore = [
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+line-length=92
+target-version="py311"
+include = ["*.py"]
+
+[tool.ruff.lint.pydocstyle]
+convention="google"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["D104"]
+
+
+[tool.pytest.ini_options]
+addopts = """
+-v --cov=backend \
+--cov-report term-missing \
+--cov-report xml:coverage.xml
+"""
+pythonpath = [
+  ".", "backend",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "def main",
+    "if __name__ == .__main__.:"
+    ]

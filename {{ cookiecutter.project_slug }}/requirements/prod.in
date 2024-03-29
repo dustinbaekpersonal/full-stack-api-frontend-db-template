@@ -1,0 +1,20 @@
+## backend
+asyncpg
+fastapi
+uvicorn
+pip-system-certs
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pydantic-settings
+
+## frontend
+dash
+dash-bootstrap-components
+pandas
+attrs
+webargs
+pip-system-certs
+
+## In general
+loguru

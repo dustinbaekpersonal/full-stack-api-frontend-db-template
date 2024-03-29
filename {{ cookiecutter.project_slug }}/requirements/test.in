@@ -1,0 +1,6 @@
+-r ./prod.txt
+httpx
+pytest >= 7.3.0
+pytest-cov
+pytest-mock
+pytest-trio

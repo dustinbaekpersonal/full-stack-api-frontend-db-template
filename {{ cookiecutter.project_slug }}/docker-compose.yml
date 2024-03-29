@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+  db:
+    container_name: postgresql_db
+    image: postgres:16-alpine
+    restart: always
+    volumes:
+      # - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      # copy the sql script to populate tables
+      - ./db/insert_tables.sql:/docker-entrypoint-initdb.d/insert_tables.sql
+
+    ports:
+      - "1486:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_URL=${DB_URL}
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  backend:
+    container_name: fastapi_app
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    command: sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      # mounting volume assures host machine and container are in sync
+      - ./backend:/app
+    depends_on:
+      - db
+    restart: always
+
+  frontend:
+    container_name: dash_app
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+    command: sh -c "python -m src.main"
+    ports:
+      - "8050:8050"
+    volumes:
+      # mounting volume assures host machine and container are in sync
+      - ./frontend:/dash
+    depends_on:
+      - db
+      - backend
+    restart: always
